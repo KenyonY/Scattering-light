@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from matplotlib import rc
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
@@ -33,7 +32,8 @@ def generateData(alpha,rm,p1,p2,im =0.0,N_ta = 2**13-1):
     os.chdir(origin_path)
     return data
 
-def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
+def superposition_intensity(alpha=2000, rm=1.7, im=0., p=[0, 1], N_ta=2 ** 13 - 1):
+    """Return tuple(theta, i1, i2)"""
     Rs1, Is1, Rs2, Is2 = 0, 0, 0, 0
 
     N = len(p)
@@ -54,26 +54,28 @@ def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(
 
     i1 = Rs1 * Rs1 + Is1 * Is1
     i2 = Rs2 * Rs2 + Is2 * Is2
+    return theta,i1, i2
 
+def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
+
+    theta, i1, i2 = superposition_intensity(alpha, rm, im, p, N_ta)
     fig = plt.figure(figsize=figsize)
     xySize = 17
     tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)
     ax = plt.subplot(1, 1, 1)  # 两行一列第二个(N=2)
-
-    plt.plot(theta, np.log(i1), theta, np.log(i2))
+    y1 = np.log(i1)
+    y2 = np.log(i2)
+    plt.plot(theta, y1, theta, y2)
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
     plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
     legend_dict = dict(family='Times New Roman', size=17)
     ax.tick_params(**tick_dict)
-
     plt.legend(['$I_1$', '$I_2$'], prop=legend_dict)
-
     p_name = []
-
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
     #     plt.title('The superposition of {}'.format(''.join(p_name)), fontsize=xySize)
-    plt.text(70, 16, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    plt.text(70, max(y1.max(), y2.max())*3/4, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
     return fig
 
 def plotData_multi(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(20, 12)):
@@ -88,12 +90,8 @@ def plotData_multi(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsi
     ax1.tick_params(**tick_dict)
     for i in range(N):
         data = generateData(alpha, rm, p1=p[i], p2=p[i], im=im, N_ta=N_ta)
-
         theta = data['ScatteringAngle']
         theta = theta.to_numpy()
-        #    i1, i2 = data['I1'], data['I2']
-        #    i1,i2 = i1.to_numpy(), i2.to_numpy()
-
         rs1, is1, rs2, is2 = data['rs1'], data['is1'], data['rs2'], data['is2']
         rs1, is1, rs2, is2 = rs1.to_numpy(), is1.to_numpy(), rs2.to_numpy(), is2.to_numpy()
         Rs1 += rs1

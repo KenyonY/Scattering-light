@@ -31,12 +31,16 @@ def generateData(alpha,rm,im =0.0,N_ta = 2**13-1):
 
     return data
 
-def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
+def intensity(alpha, rm, im,N_ta):
     data = generateData(alpha, rm, im, N_ta=N_ta)
     theta = data['ScatterAngle']
     theta = theta.to_numpy()
     i1, i2 = data['I1'], data['I2']
     i1, i2 = i1.to_numpy(), i2.to_numpy()
+    return theta, i1, i2
+
+def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
+    theta, i1, i2 = intensity(alpha, rm, im, N_ta)
     fig = plt.figure(figsize=figsize)
     ax1 = plt.subplot(1, 1, 1)
     tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)

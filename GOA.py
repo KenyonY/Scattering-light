@@ -7,7 +7,6 @@ from matplotlib import rc
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
 
-
 def generateData(alpha,rm,p,N_ta = 2**13-1):
     '''
     生成p1——p2阶分波叠加分布，p1 <0绘制总光强
@@ -34,12 +33,11 @@ def generateData(alpha,rm,p,N_ta = 2**13-1):
     os.chdir(origin_path)
     return data
 
+def superposition_intensity(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1):
+    """Return tuple(theta, i1, i2)"""
 
-def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     Rs1, Is1, Rs2, Is2 = 0, 0, 0, 0
-
     N = len(p)
-
     for i in range(N):
         data = generateData(alpha, rm, p=p[i], N_ta=N_ta)
         theta = data['ScatteringAngle']
@@ -56,13 +54,21 @@ def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
 
     i1 = Rs1 * Rs1 + Is1 * Is1
     i2 = Rs2 * Rs2 + Is2 * Is2
+    return theta,i1, i2
+
+
+def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
+    theta, i1, i2 = superposition_intensity(alpha, rm, p, N_ta)
 
     fig = plt.figure(figsize=figsize)
     xySize = 17
     tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)
     ax = plt.subplot(1, 1, 1)
-
-    plt.plot(theta, np.log(i1), theta, np.log(i2))
+    x = theta[:]
+    y1, y2 = np.log(i1)[:],np.log(i2)[:]
+    # x = theta
+    # y1, y2 = np.log(i1)[:],np.log(i2)[:]
+    plt.plot(x, y1, x, y2)
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
     plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
     legend_dict = dict(family='Times New Roman', size=17)
@@ -73,10 +79,9 @@ def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
 
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
-    plt.text(70, 19, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    plt.text(70, max(y1.max(), y2.max())*3/4, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
     return fig
 
-plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6))
 
 def plot_multi(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     '''N表示分波个数'''
@@ -100,8 +105,9 @@ def plot_multi(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
         Is1 += is1
         Rs2 += rs2
         Is2 += is2
+        x = theta[:]
 
-        plt.plot(theta, np.log(rs1 * rs1 + is1 * is1), theta, np.log(rs2 * rs2 + is2 * is2))
+        plt.plot(x, np.log(rs1 * rs1 + is1 * is1)[:], x, np.log(rs2 * rs2 + is2 * is2)[:])
         plt.ylabel('Logarithm of scattering amplitude (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
 
     legendName = []
@@ -115,8 +121,8 @@ def plot_multi(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     i2 = Rs2 * Rs2 + Is2 * Is2
 
     ax2 = plt.subplot(2, 1, 2)  # 两行一列第二个(N=2)
-
-    plt.plot(theta, np.log(i1), theta, np.log(i2))
+    y1, y2 = np.log(i1)[:], np.log(i2)[:]
+    plt.plot(x, y1, x, y2)
 
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
     plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
@@ -130,7 +136,9 @@ def plot_multi(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
     #     plt.title('The superposition of {}'.format(''.join(p_name)), fontsize=xySize)
-    plt.text(70, 17, 'The superposition of {}'.format(''.join(p_name)), fontsize=17)
+    plt.text(x.max()/3, max(y1.max(), y2.max())*3/4, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
     # plt.show()
     return fig
-#
+
+if __name__ == "__main__":
+    plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6))
