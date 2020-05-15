@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.fft import fft,fftshift
 
+
 def space2fre(x, y):
     """ Transform space domain (x, y) to the frequency domain (frequency, amplitude)
     """
@@ -16,6 +17,7 @@ def space2fre(x, y):
     else:
         fre_x = np.linspace(-f_max, f_max, N)
     fre_y_shift = fftshift(fft(y))
-    amplitude_y = 2 * np.abs(fre_y_shift) / (N - 1)
+    magnitude_energy = np.abs(fre_y_shift) / (N - 1)
+    amplitude_y = magnitude_energy * 2 #  则表示原来振幅
     idx = np.argwhere(fre_x>=0)
     return fre_x[idx].reshape(-1, 1), amplitude_y[idx].reshape(-1, 1)

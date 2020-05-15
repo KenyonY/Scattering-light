@@ -1,10 +1,1 @@
-Test a html file
-
-
-
-<iframe 
-	height=550 width=900 src="https://htmlpreview.github.io/?https://github.com/beidongjiedeguang/ParticleScattering/blob/master/picture/lalal.html" 
-	frameborder=0 
-	allowfullscreen>
-</iframe>
-
+注意，目前本仓库为放入Mie理论计算程序，如需源代码请与我联系：beidongjiedeguang@gmail.com

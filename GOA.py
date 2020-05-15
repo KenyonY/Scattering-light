@@ -65,12 +65,12 @@ def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)
     ax = plt.subplot(1, 1, 1)
     x = theta[:]
-    y1, y2 = np.log(i1)[:],np.log(i2)[:]
+    # y1, y2 = np.log(i1)[:],np.log(i2)[:]
     # x = theta
     # y1, y2 = np.log(i1)[:],np.log(i2)[:]
-    plt.plot(x, y1, x, y2)
+    plt.semilogy(x, i1, x, i2)
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
-    plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
+    plt.ylabel('Scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
     legend_dict = dict(family='Times New Roman', size=17)
     ax.tick_params(**tick_dict)
 
@@ -79,7 +79,8 @@ def plot_goa(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
 
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
-    plt.text(70, max(y1.max(), y2.max())*3/4, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    plt.text(70, max(i1.max(), i2.max())**(3/4), f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    fig.set_tight_layout(tight='rect')
     return fig
 
 
@@ -130,7 +131,7 @@ def plot_multi(alpha=2000, rm=1.7, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
     ax2.tick_params(**tick_dict)
 
     plt.legend(['$I_1$', '$I_2$'], prop=legend_dict)
-
+    fig.set_tight_layout(tight='rect')
     p_name = []
 
     for pi in p:

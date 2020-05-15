@@ -61,21 +61,30 @@ def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(
     theta, i1, i2 = superposition_intensity(alpha, rm, im, p, N_ta)
     fig = plt.figure(figsize=figsize)
     xySize = 17
-    tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)
+
+    major_tick_dict = dict(which='major', direction='in', top=0, right=0, length=6, width=0.7, labelsize=15)
+    minor_tick_dict = dict(which='minor', direction='in', top=0, right=0, length=3, width=0.7, labelsize=15)
+
     ax = plt.subplot(1, 1, 1)  # 两行一列第二个(N=2)
-    y1 = np.log(i1)
-    y2 = np.log(i2)
-    plt.plot(theta, y1, theta, y2)
+    # y1 = np.log(i1)
+    # y2 = np.log(i2)
+    # plt.plot(theta, y1, theta, y2)
+    plt.semilogy(theta, i1, theta, i2)
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
-    plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
+    plt.ylabel('Scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
+
     legend_dict = dict(family='Times New Roman', size=17)
-    ax.tick_params(**tick_dict)
+    
+    plt.minorticks_on()
+    ax.tick_params(**major_tick_dict)
+    ax.tick_params(**minor_tick_dict)
     plt.legend(['$I_1$', '$I_2$'], prop=legend_dict)
     p_name = []
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
     #     plt.title('The superposition of {}'.format(''.join(p_name)), fontsize=xySize)
-    plt.text(70, max(y1.max(), y2.max())*3/4, f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    plt.text(70, max(i1.max(), i2.max())**(3/4), f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    fig.set_tight_layout(tight='rect')
     return fig
 
 def plotData_multi(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(20, 12)):

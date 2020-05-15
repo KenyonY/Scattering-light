@@ -4,9 +4,14 @@ import matplotlib as mpl
 import numpy as np
 import pandas as pd
 from matplotlib import rc
+# plt.rcParams['savefig.dpi'] = 1000       
+# plt.rcParams['figure.dpi'] = 1000 
 
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
+
+
+
 # mpl.rcParams['font.sans-serif'] = ['Times New Roman']
 # mpl.rcParams['text.usetex'] = True
 
@@ -41,19 +46,31 @@ def intensity(alpha, rm, im,N_ta):
 
 def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
     theta, i1, i2 = intensity(alpha, rm, im, N_ta)
-    fig = plt.figure(figsize=figsize)
-    ax1 = plt.subplot(1, 1, 1)
-    tick_dict = dict(direction='in', top=1, right=1, length=4, width=0.7, labelsize=15)
-    ax1.tick_params(**tick_dict)
-    plt.plot(theta, np.log(i1), theta, np.log(i2))
+    fig, ax1 = plt.subplots(figsize=figsize)
+    plt.minorticks_on()
+    
+    major_tick_dict = dict(which='major', direction='in', top=0, right=0, length=6, width=0.7, labelsize=15)
+    minor_tick_dict = dict(which='minor', direction='in', top=0, right=0, length=3, width=0.7, labelsize=15)
+    ax1.tick_params(**major_tick_dict)
+    ax1.tick_params(**minor_tick_dict)
 
+    # plt.plot(theta, np.log(i1), theta, np.log(i2))
+    
+    ax1.semilogy(theta, i1, basey=10)
+    ax1.semilogy(theta, i2)
+
+    # ax1.tick_params(axis='y', which='minor')
+
+    
     # **************************************************************************
     xySize = 17
     plt.xlabel('Scattering Angle(deg)', fontproperties='Times New Roman', fontsize=xySize)
-    plt.ylabel('Logarithm of scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
+    plt.ylabel('Scattering intensity (a.u.)', fontproperties='Times New Roman', fontsize=xySize)
     legend_dict = dict(family='Times New Roman', size=17)
     # ***************************************************************
     plt.legend(['$I_1$', '$I_2$'], prop=legend_dict)
+    fig.set_tight_layout(tight="rect")
+    # plt.show()
     return fig
 
 def plotMie_dop(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(20, 12)):
@@ -86,10 +103,12 @@ def plotMie_dop(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(20, 12
 
     # plt.show()
     return fig
-    
-if __name__ == '__main__':
-    # alpha,rm,im = eval(input('please input alpha, rm, im \nFor example:1000,0.7,0.\n'))
 
-    fig = plotMie_dop(alpha=1000, rm=0.7, im=0)
+
+
+if __name__ == '__main__':
+    pass
+    # alpha,rm,im = eval(input('please input alpha, rm, im \nFor example:1000,0.7,0.\n'))
+    # fig = plotMie(alpha=1000, rm=0.7, im=0)
     # plt.show()
-    fig.show()
+    # fig.show()
