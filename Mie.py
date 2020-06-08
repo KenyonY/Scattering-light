@@ -23,7 +23,7 @@ def generateData(alpha,rm,im =0.0,N_ta = 2**13-1):
 
     Ta_min, Ta_max = 0,180
     with open(txtName,'w') as f1:
-        f1.write('{}\n{:.3f}\t{:.3f}\n{}\t{:.2f}\t{:.2f}'
+        f1.write('{}\n{:.6f}\t{:.3f}\n{}\t{:.2f}\t{:.2f}'
                 .format(alpha,rm,im,N_ta,Ta_min,Ta_max))
 
     os.system(exeName)
@@ -44,7 +44,8 @@ def intensity(alpha, rm, im,N_ta):
     i1, i2 = i1.to_numpy(), i2.to_numpy()
     return theta, i1, i2
 
-def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
+def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6),
+            show_critial_angle=True, show_brewster_angle=True):
     theta, i1, i2 = intensity(alpha, rm, im, N_ta)
     fig, ax1 = plt.subplots(figsize=figsize)
     plt.minorticks_on()
@@ -53,14 +54,10 @@ def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
     minor_tick_dict = dict(which='minor', direction='in', top=0, right=0, length=3, width=0.7, labelsize=15)
     ax1.tick_params(**major_tick_dict)
     ax1.tick_params(**minor_tick_dict)
-
     # plt.plot(theta, np.log(i1), theta, np.log(i2))
-    
     ax1.semilogy(theta, i1, basey=10)
     ax1.semilogy(theta, i2)
-
     # ax1.tick_params(axis='y', which='minor')
-
     
     # **************************************************************************
     xySize = 17
@@ -69,6 +66,18 @@ def plotMie(alpha = 9000, rm = 1.7, im= 0.0, N_ta = 2**13-1, figsize=(15, 6)):
     legend_dict = dict(family='Times New Roman', size=17)
     # ***************************************************************
     plt.legend(['$I_1$', '$I_2$'], prop=legend_dict)
+    if show_critial_angle:
+        theta_c = np.degrees(np.pi - 2 * np.arcsin(rm))
+        theta_b = np.degrees(np.pi - 2 * np.arctan(rm))
+        plt.vlines(theta_c, ymin=0, ymax=max(i1.max(), i2.max())**(3/5), color='r')
+        plt.text(theta_c+2, max(i1.max(), i2.max()) ** (4/7), f'Critical Angle',
+                 fontsize=17)
+    if show_brewster_angle:
+        theta_b = np.degrees(np.pi - 2 * np.arctan(rm))
+        plt.vlines(theta_b, ymin=0, ymax=max(i1.max(), i2.max())**(3/5), color='r')
+        plt.text(theta_b+2, max(i1.max(), i2.max()) ** (4/7), f'Brewster Angle',
+                 fontsize=17)
+
     fig.set_tight_layout(tight="rect")
     # plt.show()
     return fig

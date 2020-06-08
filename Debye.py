@@ -56,7 +56,8 @@ def superposition_intensity(alpha=2000, rm=1.7, im=0., p=[0, 1], N_ta=2 ** 13 - 
     i2 = Rs2 * Rs2 + Is2 * Is2
     return theta,i1, i2
 
-def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6)):
+def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(15, 6),
+               show_critial_angle=True, show_brewster_angle=True):
 
     theta, i1, i2 = superposition_intensity(alpha, rm, im, p, N_ta)
     fig = plt.figure(figsize=figsize)
@@ -83,7 +84,17 @@ def plot_debye(alpha=2000, rm=1.7, im=0.0, p=[0, 1], N_ta=2 ** 13 - 1, figsize=(
     for pi in p:
         p_name.append(f'$p_{{{pi}}}$ ')
     #     plt.title('The superposition of {}'.format(''.join(p_name)), fontsize=xySize)
-    plt.text(70, max(i1.max(), i2.max())**(3/4), f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    plt.text(70, max(i1.max(), i2.max())**(4/5), f'The superposition of {p_name[0]}and {p_name[1]}', fontsize=17)
+    if show_critial_angle:
+        theta_c = np.degrees(np.pi - 2 * np.arcsin(rm))
+        plt.vlines(theta_c, ymin=0, ymax=max(i1.max(), i2.max())**(3/5), color='r')
+        plt.text(theta_c+1, max(i1.max(), i2.max()) ** (4/7), f'Critical Angle',
+                 fontsize=17)
+    if show_brewster_angle:
+        theta_b = np.degrees(np.pi - 2 * np.arctan(rm))
+        plt.vlines(theta_b, ymin=0, ymax=max(i1.max(), i2.max())**(3/5), color='r')
+        plt.text(theta_b+1, max(i1.max(), i2.max()) ** (4/7), f'Brewster Angle',
+                 fontsize=17)
     fig.set_tight_layout(tight='rect')
     return fig
 
